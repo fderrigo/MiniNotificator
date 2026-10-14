@@ -1,0 +1,14 @@
+@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Errore";
+}
+<section class="card">
+    <h1>Si è verificato un errore.</h1>
+    <p class="subtitle">Riprova più tardi.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p><strong>Request ID:</strong> <code>@Model.RequestId</code></p>
+    }
+    <a href="/">Torna alla home</a>
+</section>

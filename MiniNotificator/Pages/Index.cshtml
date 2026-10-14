@@ -1,0 +1,83 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Invia messaggio";
+}
+
+<section class="card">
+    @if (Model.Service is not null)
+    {
+        if (Model.Service.Success)
+        {
+            <div class="sender-banner">
+                Stai inviando per conto di <strong>@Model.Service.OrganizationName</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.Service.DepartmentName))
+                {
+                    <span>(@Model.Service.DepartmentName)</span>
+                }
+                sul servizio <strong>@Model.Service.ServiceName</strong>
+                in ambiente <strong>@Model.Service.Environment</strong>.
+            </div>
+        }
+        else
+        {
+            <div class="sender-banner sender-banner-warn">
+                Ambiente <strong>@Model.Service.Environment</strong> — info servizio non disponibile: @Model.Service.Error
+            </div>
+        }
+    }
+
+    <h1>Invia un messaggio tramite AppIO</h1>
+    <p class="subtitle">Compila i campi e invia una notifica al cittadino sull'app IO.</p>
+
+    @if (Model.Ok is not null)
+    {
+        <div class="alert @(Model.Ok == true ? "alert-ok" : "alert-err")">
+            <strong>@Model.StatusText</strong>
+            @if (!string.IsNullOrWhiteSpace(Model.Details))
+            {
+                <details>
+                    <summary>Risposta API</summary>
+                    <pre>@Model.Details</pre>
+                </details>
+            }
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.Log))
+    {
+        <div class="alert alert-log">
+            <strong>Log diagnostico (solo test)</strong>
+            <pre>@Model.Log</pre>
+        </div>
+    }
+
+    <form method="post">
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+        <div class="field">
+            <label asp-for="Input.FiscalCode"></label>
+            <input asp-for="Input.FiscalCode" maxlength="16" placeholder="RSSMRA80A01H501U"
+                   class="input" autocomplete="off" style="text-transform:uppercase" />
+            <span asp-validation-for="Input.FiscalCode" class="field-err"></span>
+        </div>
+
+        <div class="field">
+            <label asp-for="Input.Subject"></label>
+            <input asp-for="Input.Subject" maxlength="120" placeholder="Oggetto del messaggio" class="input" />
+            <span asp-validation-for="Input.Subject" class="field-err"></span>
+        </div>
+
+        <div class="field">
+            <label asp-for="Input.Markdown"></label>
+            <textarea asp-for="Input.Markdown" rows="8" maxlength="10000"
+                      placeholder="Testo del messaggio in markdown (minimo 80 caratteri)" class="input"></textarea>
+            <span asp-validation-for="Input.Markdown" class="field-err"></span>
+        </div>
+
+        <div class="actions">
+            <button type="submit" asp-page-handler="Verifica" class="btn btn-secondary">Verifica destinatario</button>
+            <button type="submit" asp-page-handler="Invia" class="btn btn-primary">Invia messaggio</button>
+        </div>
+    </form>
+</section>
